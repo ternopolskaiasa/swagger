@@ -7,8 +7,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
+/**
+ * Entry point of the application.
+ * Handles interaction with user inputs and delegates actions to the DAO layer.
+ */
 @SpringBootApplication
 public class Main {
+
+    /**
+     * Application entry point.
+     * Runs the program loop until the user chooses to exit.
+     *
+     * @param args Command-line arguments (not used)
+     */
     public static void main(String[] args) {
         try {
             new Main().run();
@@ -17,14 +28,30 @@ public class Main {
         }
     }
 
+    /**
+     * DAO instance for working with user data.
+     */
     private final UserDAOImpl userDAO;
+
+    /**
+     * Input reader for reading commands entered by the user.
+     */
     private final Scanner scanner;
 
+    /**
+     * Constructor that initializes DAO and scanner components.
+     */
     public Main() {
         this.userDAO = new UserDAOImpl();
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Core application logic.
+     * Continues running until the user decides to exit.
+     *
+     * @throws Exception if any error occurs during execution
+     */
     public void run() throws Exception {
         boolean exit = false;
         while (!exit) {
@@ -55,6 +82,9 @@ public class Main {
         }
     }
 
+    /**
+     * Prints available commands to the console.
+     */
     private void printCommands() {
         System.out.println("\nCommands:");
         System.out.println("1. get user by id");
@@ -65,21 +95,41 @@ public class Main {
         System.out.println("6. exit");
     }
 
+    /**
+     * Reads a numeric command chosen by the user.
+     *
+     * @return integer value of the command
+     */
     int readCommand() {
         System.out.print("Enter necessary number of a command: ");
         return Integer.parseInt(scanner.nextLine());
     }
 
+    /**
+     * Handles retrieval of a user by ID.
+     *
+     * @throws Exception if user with the given ID is not found
+     */
     void handleGetUserById() throws Exception {
         System.out.print("Enter the id: ");
         long id = Long.parseLong(scanner.nextLine());
         System.out.println(userDAO.getUserById(id));
     }
 
+    /**
+     * Handles listing all users.
+     *
+     * @throws Exception if something goes wrong while fetching users
+     */
     void handleGetAllUsers() throws Exception {
         System.out.println(userDAO.getAllUsers().toString());
     }
 
+    /**
+     * Handles saving a new user.
+     *
+     * @throws Exception if duplicate email is detected or some other error occurs
+     */
     void handleSaveUser() throws Exception {
         System.out.print("Enter name: ");
         String username = scanner.nextLine();
@@ -99,6 +149,11 @@ public class Main {
         System.out.println("User was created!");
     }
 
+    /**
+     * Handles updating an existing user.
+     *
+     * @throws Exception if the user is not found or invalid parameter is given
+     */
     void handleUpdateUser() throws Exception {
         System.out.print("Enter id of wanted user: ");
         User userUpdate = userDAO.getUserById(Long.parseLong(scanner.nextLine()));
@@ -130,6 +185,11 @@ public class Main {
         System.out.println("User was updated!");
     }
 
+    /**
+     * Handles deletion of a user by ID.
+     *
+     * @throws Exception if the user with the given ID is not found
+     */
     void handleDeleteUser() throws Exception {
         System.out.print("Enter the id: ");
         long id = Long.parseLong(scanner.nextLine());
