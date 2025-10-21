@@ -16,33 +16,53 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import java.util.List;
 
+/**
+ * Controller for handling CRUD operations on Users.
+ */
 @Tag(name = "User Management", description = "Operations related to managing users.")
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
     private final UserService userService;
 
+    /**
+     * Constructor injection of the {@link UserService}.
+     *
+     * @param userService Service layer implementation for user management.
+     */
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+    /**
+     * Creates a new user based on provided DTO and returns the response with status code 201 (CREATED).
+     *
+     * @param requestDTO Validated input DTO containing necessary fields for creating a user.
+     * @return Created user's details in form of a {@link UserResponseDTO}.
+     */
     @Operation(
-            summary = "New user creation",
+            summary = "Create a new user.",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "New user created successfully"),
-                    @ApiResponse(responseCode = "400", description = "Validation data error", content = @Content(schema = @Schema(implementation = Exception.class)))
-            })    
+                @ApiResponse(responseCode = "201", description = "User was successfully created."),
+                @ApiResponse(responseCode = "400", description = "Bad Request due to validation errors.", content = @Content(schema = @Schema(implementation = Exception.class)))
+            })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDTO createUser(@Valid @RequestBody UserRequestDTO requestDto) {
         return userService.createUser(requestDto);
     }
 
+    /**
+     * Retrieves an existing user by their id.
+     *
+     * @param id Unique identifier of the user.
+     * @return The requested user's information as a {@link UserResponseDTO}, or throws 404 if no such user exists.
+     */
     @Operation(
-            summary = "Get user by id",
+            summary = "Get user by its id.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "User found", content = @Content(schema = @Schema(implementation = UserResponseDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "User not found")
+                @ApiResponse(responseCode = "200", description = "User retrieved successfully.", content = @Content(schema = @Schema(implementation = UserResponseDTO.class))),
+                @ApiResponse(responseCode = "404", description = "No user found with given id.")
             })
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -50,10 +70,15 @@ public class UserController {
         return userService.getUserById(id);
     }
 
+    /**
+     * Fetches all registered users from the system.
+     *
+     * @return A list of all users present in the database.
+     */
     @Operation(
-            summary = "Get all users",
+            summary = "Get all users.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Users list", content = @Content(array = @io.swagger.v3.oas.annotations.media.ArraySchema(schema = @Schema(implementation = User.class))))
+                @ApiResponse(responseCode = "200", description = "List of users returned successfully.", content = @Content(array = @io.swagger.v3.oas.annotations.media.ArraySchema(schema = @Schema(implementation = User.class))))
             })
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -61,11 +86,18 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    /**
+     * Updates an existing user using the specified id and valid DTO payload.
+     *
+     * @param id       Identifier of the user to be updated.
+     * @param requestDTO New values for updating the user record.
+     * @return Updated user's information wrapped in a {@link UserResponseDTO}.
+     */
     @Operation(
-            summary = "User update",
+            summary = "Update an existing user by providing its id and new data.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "User has been updated", content = @Content(schema = @Schema(implementation = UserResponseDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "User is not found")
+                @ApiResponse(responseCode = "200", description = "User updated successfully.", content = @Content(schema = @Schema(implementation = UserResponseDTO.class))),
+                @ApiResponse(responseCode = "404", description = "No user found with given id.")
             })
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -73,11 +105,16 @@ public class UserController {
         return userService.updateUser(id, requestDto);
     }
 
+    /**
+     * Deletes a user from the system.
+     *
+     * @param id Unique identifier of the user to be removed.
+     */
     @Operation(
-            summary = "User deletion",
+            summary = "Remove a user by specifying its id.",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "User deleted"),
-                    @ApiResponse(responseCode = "404", description = "User hasn't been deleted")
+                @ApiResponse(responseCode = "204", description = "User deleted successfully."),
+                @ApiResponse(responseCode = "404", description = "No user found with given id.")
             })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
